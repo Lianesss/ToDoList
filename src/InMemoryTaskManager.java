@@ -131,7 +131,24 @@ public class InMemoryTaskManager {
     }
 
     public void updateSubTask(SubTask subTask) {
-        if (subTasks.containsKey(subTask.getId())) {
+        if (subTask != null && subTasks.containsKey(subTask.getId())) {
+            SubTask savedSubTask = subTasks.get(subTask.getId());
+
+            // Если у подзадачи поменялся эпик, перепривязываем её
+            if (savedSubTask.getEpicId() != subTask.getEpicId()) {
+                Epic oldEpic = epics.get(savedSubTask.getEpicId());
+                if (oldEpic != null) {
+                    oldEpic.removeSubtaskId(subTask.getId());
+                    updateEpicStatus(oldEpic);
+                }
+
+                Epic newEpic = epics.get(subTask.getEpicId());
+                if (newEpic != null) {
+                    newEpic.addSubtaskId(subTask.getId());
+                    updateEpicStatus(newEpic);
+                }
+            }
+
             subTasks.put(subTask.getId(), subTask);
 
             Epic epic = epics.get(subTask.getEpicId());
