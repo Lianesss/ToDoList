@@ -1,4 +1,8 @@
 package model;
 
-public class TaskStatus {
+//enum - enumerate
+public enum TaskStatus {
+    NEW,
+    IN_PROGRESS,
+    DONE
 }
