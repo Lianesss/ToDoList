@@ -1,4 +1,4 @@
-package model;
+package models;
 
 //enum - enumerate
 public enum TaskStatus {
