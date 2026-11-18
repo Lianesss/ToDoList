@@ -7,6 +7,7 @@ import models.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +84,72 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             ids.add(Integer.parseInt(part));
         }
         return ids;
+    }
+
+    // TODO: Заглушка
+    public static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+
+        // До пустой строки
+        try {
+            String content = Files.readString(file.toPath());
+            String[] lines = content.split("\n");
+
+            int i = 1;
+
+            while (i < lines.length && !lines[i].isBlank()) {
+                Task task = fromString(lines[i]);
+
+                if (task instanceof Epic) {
+                    manager.epics.put(task.getId(), (Epic) task);
+                } else if (task instanceof SubTask subTask) {
+                    manager.subTasks.put(subTask.getId(), subTask);
+
+                    Epic epic = manager.epics.get(subTask.getEpicId());
+                    if (epic != null) {
+                        epic.addSubtaskId(subTask.getId());
+                    }
+                } else {
+                    manager.tasks.put(task.getId(), task);
+                }
+
+                // Запоминаем самый большой id, который уже есть в файле и обновляем счётчик id
+                if (task.getId() >= manager.idCounter) {
+                    manager.idCounter = task.getId() + 1;
+                }
+
+                i++;
+            }
+
+            // Пропускаем пустую строку
+            i++;
+
+            // TODO Восстановление истории
+            if (i < lines.length && !lines[i].isBlank()) {
+                List<Integer> historyIds = historyFromString(lines[i]);
+
+                for (Integer id : historyIds) {
+                    // Ищем в обычных задачах
+                    Task task = manager.tasks.get(id);
+                    // Ищем в эпиках
+                    if (task == null) {
+                        task = manager.epics.get(id);
+                    }
+                    // Ищем в сабтасках
+                    if (task == null) {
+                        task = manager.subTasks.get(id);
+                    }
+                    // Нашли - добавляем в историю
+                    if (task != null) {
+                        manager.historyManager.add(task);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при загрузке из файла", e);
+        }
+
+        return manager;
     }
 
     private void save() {

@@ -15,11 +15,12 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
 
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
-    private final List<Task> history = new ArrayList<>();
-    private int idCounter = 1;
+
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, SubTask> subTasks = new HashMap<>();
+
+    protected int idCounter = 1;
 
     private int generateId() {
         return idCounter++;
