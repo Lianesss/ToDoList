@@ -1,0 +1,42 @@
+чек-лист
+
+1. TaskManager сделан интерфейсом
+ Класс менеджера переименован / оставлен как InMemoryTaskManager и реализует TaskManager
+ Добавлены @Override на методы
+
+
+
+2. История просмотров (первый вариант)
+ При вызове getTaskById / getEpicById / getSubTaskById задача добавляется в историю
+ История хранилась в ArrayList (сначала с лимитом 10)
+ Метод getHistory()
+
+
+3. Утилитарный класс
+ Создан класс Managers
+ Метод Managers.getDefault() → возвращает TaskManager
+ Метод Managers.getDefaultHistory() → возвращает HistoryManager
+
+
+4. Выделение истории в отдельный интерфейс
+ Создан интерфейс HistoryManager (add, getHistory)
+ Создан класс InMemoryHistoryManager
+ Логика истории перенесена из InMemoryTaskManager в InMemoryHistoryManager
+InMemoryTaskManager работает с историей через интерфейс
+
+
+5. Доработка истории (без дубликатов)
+ В HistoryManager добавлен метод remove(int id)
+ При повторном просмотре старый просмотр удаляется, задача ставится в конец
+ При удалении задачи/эпика/подзадачи она удаляется и из истории
+
+
+6. Финальная версия истории (O(1))
+ Написан свой двусвязный список (поля head, tail)
+ Создан внутренний класс Node
+ Добавлен HashMap<Integer, Node>
+ Реализованы методы linkLast, removeNode, getTasks
+add и remove работают за O(1)
+
+
+7. Тест

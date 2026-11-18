@@ -14,19 +14,16 @@ import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
-
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
-
+    private final List<Task> history = new ArrayList<>();
     private int idCounter = 1;
 
     private int generateId() {
         return idCounter++;
     }
-
-    private final List<Task> history = new ArrayList<>();
 
     @Override
     public List<Task> getAllTasks() {
@@ -185,7 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for (Task task : tasks.values()){
+        for (Task task : tasks.values()) {
             historyManager.remove(task.getId());
         }
 
@@ -194,11 +191,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-        for (Epic epic : epics.values()){
+        for (Epic epic : epics.values()) {
             historyManager.remove(epic.getId());
         }
 
-        for (SubTask subTask: subTasks.values()){
+        for (SubTask subTask : subTasks.values()) {
             historyManager.remove(subTask.getId());
         }
         epics.clear();
@@ -207,7 +204,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubTasks() {
-        for (SubTask subTask: subTasks.values()){
+        for (SubTask subTask : subTasks.values()) {
             historyManager.remove(subTask.getId());
         }
         for (Epic epic : epics.values()) {
